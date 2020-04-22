@@ -57,8 +57,9 @@ const GFXfont *fonts[] = {
 #include <ArduinoJson.h>
 #include "esp_wifi.h"
 #include "Esp.h"
-#include "board_def.h"
 #include <Button2.h>
+#include "board_def.h"
+#include "clean_display.h"
 
 #define FILESYSTEM SPIFFS
 
@@ -79,6 +80,7 @@ void showMianPage(void);
 void showQrPage(void);
 void displayInit(void);
 void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color);
+void clean_display();
 
 typedef struct {
     char name[32];
@@ -639,6 +641,10 @@ void displayInit(void)
     display.setFont(&DEFALUT_FONT);
     display.setTextSize(0);
 
+    displayText("Tag Manager", 50, CENTER_ALIGNMENT);
+    display.update();
+    delay(3000);
+
     if (SDCARD_SS > 0) {
         display.fillScreen(GxEPD_WHITE);
 #if !(TTGO_T5_2_2)
@@ -671,10 +677,21 @@ bool setPowerBoostKeepOn(int en)
     return Wire.endTransmission() == 0;
 }
 
+void clean_display() {
+    Serial.println("Adafruit EPD: Starting to clear screen");
+    display_to_clean.begin();
+    display_to_clean.clearBuffer();
+    display_to_clean.display();
+    Serial.println("Adafruit EPD: Screen cleared");
+}
+
 void setup()
 {
     Serial.begin(115200);
     delay(500);
+
+    clean_display();
+    delay(2000);
 
 #ifdef ENABLE_IP5306
     Wire.begin(I2C_SDA, I2C_SCL);

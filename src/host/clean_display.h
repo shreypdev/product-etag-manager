@@ -2,6 +2,8 @@
   This program will clear everything on screen and
   make it ready for any program to be mounted.
  ****************************************************/
+#ifndef CLEAN_DISPLAY_H
+#define CLEAN_DISPLAY_H
 
 #include "Adafruit_EPD.h"
 
@@ -22,7 +24,7 @@
 //#define FLEXIBLE_213
 
 /* Uncomment the following line if you are using 2.13" monochrome 250*122 EPD */
-Adafruit_SSD1675 display(250, 122, EPD_DC, EPD_RESET, EPD_CS, SRAM_CS, EPD_BUSY);
+Adafruit_SSD1675 display_to_clean(250, 122, EPD_DC, EPD_RESET, EPD_CS, SRAM_CS, EPD_BUSY);
 
 /* Uncomment the following line if you are using 2.7" tricolor or grayscale EPD */
 //Adafruit_IL91874 display(264, 176, EPD_DC, EPD_RESET, EPD_CS, SRAM_CS);
@@ -34,16 +36,6 @@ Adafruit_SSD1675 display(250, 122, EPD_DC, EPD_RESET, EPD_CS, SRAM_CS, EPD_BUSY)
 /* Uncomment the following line if you are using 4.2" tricolor EPD */
 //Adafruit_IL0398 display(300, 400, EPD_DC, EPD_RESET, EPD_CS, SRAM_CS, EPD_BUSY);
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Adafruit EPD: Starting to clear screen");
-  
-  display.begin();
-  display.clearBuffer();
-  display.display();
-  Serial.println("Adafruit EPD: Screen cleared");
-}
+void clean_display();
 
-void loop() {
-  //don't do anything!
-}
+#endif

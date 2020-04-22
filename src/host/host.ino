@@ -57,8 +57,9 @@ const GFXfont *fonts[] = {
 #include <ArduinoJson.h>
 #include "esp_wifi.h"
 #include "Esp.h"
-#include "board_def.h"
 #include <Button2.h>
+#include "board_def.h"
+#include "clean_display.h"
 
 #define FILESYSTEM SPIFFS
 
@@ -72,6 +73,7 @@ String WebServerStart(void);
 void showMianPage(String ip);
 void displayInit(void);
 bool setPowerBoostKeepOn(int en);
+void clean_display();
 
 typedef enum {
     RIGHT_ALIGNMENT = 0,
@@ -186,9 +188,19 @@ bool setPowerBoostKeepOn(int en)
     return Wire.endTransmission() == 0;
 }
 
+void clean_display() {
+    Serial.println("Adafruit EPD: Starting to clear screen");
+    display_to_clean.begin();
+    display_to_clean.clearBuffer();
+    display_to_clean.display();
+    Serial.println("Adafruit EPD: Screen cleared");
+}
+
 void setup()
 {
     Serial.begin(115200);
+
+    clean_display();
 
     #ifdef ENABLE_IP5306
         Wire.begin(I2C_SDA, I2C_SCL);
