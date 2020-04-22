@@ -334,9 +334,9 @@ void WebServerStart(void)
     if (MDNS.begin("ttgo")) {
         Serial.println("MDNS responder started");
     }
-
+    
     server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
-  
+    
     server.on("css/main.css", HTTP_GET, [](AsyncWebServerRequest * request) {
         request->send(FILESYSTEM, "css/main.css", "text/css");
     });
@@ -347,7 +347,9 @@ void WebServerStart(void)
         request->send(FILESYSTEM, "js/tbdValidate.js", "application/javascript");
     });
     server.on("/data", HTTP_POST, [](AsyncWebServerRequest * request) {
-        request->send(200, "text/plain", "");
+        AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", "OK");
+        response->addHeader("Access-Control-Allow-Origin", "*");
+        request->send(response);
 
         for (int i = 0; i < request->params(); i++) {
             String name = request->getParam(i)->name();
@@ -392,7 +394,10 @@ void WebServerStart(void)
         if (final) {
             Serial.printf("UploadEnd: %s (%u)\n", filename.c_str(), index + len);
             file.close();
-            request->send(200, "text/plain", "");
+            AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", "OK");
+            response->addHeader("Access-Control-Allow-Origin", "*");
+            request->send(response);
+          
             if (++pathIndex >= 2) {
                 pathIndex = 0;
                 showMianPage();

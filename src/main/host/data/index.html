@@ -134,7 +134,7 @@
 					console.log(email.value);
 					console.log(tel.value);
 
-					$.post("/data", {
+					$.post("http://10.0.0.205/data", {
 						"company": company.value,
 						"name": name.value,
 						"address": address.value,
@@ -150,7 +150,7 @@
 					formData.append("data1", qr_info_file.files[0]);
 
 					$.ajax({
-						url: "/",
+						url: "http://10.0.0.205/",
 						type: 'POST',
 						cache: false,
 						data: formData,
