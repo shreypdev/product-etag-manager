@@ -57,6 +57,7 @@ const GFXfont *fonts[] = {
 #include <ArduinoJson.h>
 #include "esp_wifi.h"
 #include "Esp.h"
+#include "ESPmDNS.h"
 #include <Button2.h>
 #include "board_def.h"
 #include "clean_display.h"
@@ -227,7 +228,32 @@ void setup()
     showMianPage(ip);
 }
 
+void browseService(const char * service, const char * proto){
+    Serial.printf("Browsing for service _%s._%s.local. ... ", service, proto);
+    int n = MDNS.queryService(service, proto);
+    if (n == 0) {
+        Serial.println("no services found");
+    } else {
+        Serial.print(n);
+        Serial.println(" service(s) found");
+        for (int i = 0; i < n; ++i) {
+            // Print details for each service found
+            Serial.print("  ");
+            Serial.print(i + 1);
+            Serial.print(": ");
+            Serial.print(MDNS.hostname(i));
+            Serial.print(" (");
+            Serial.print(MDNS.IP(i));
+            Serial.print(":");
+            Serial.print(MDNS.port(i));
+            Serial.println(")");
+        }
+    }
+    Serial.println();
+}
+
 void loop()
 {
+    browseService("find-tag", "tcp");
     //Nothing to do here
 }

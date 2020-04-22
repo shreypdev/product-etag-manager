@@ -56,6 +56,7 @@ const GFXfont *fonts[] = {
 #include <FS.h>
 #include <ArduinoJson.h>
 #include "esp_wifi.h"
+#include "ESPmDNS.h"
 #include "Esp.h"
 #include <Button2.h>
 #include "board_def.h"
@@ -412,6 +413,7 @@ void WebServerStart(void)
     });
 
     MDNS.addService("http", "tcp", 80);
+    MDNS.addService("find-tag", "tcp", 23);
 
     server.begin();
 }
