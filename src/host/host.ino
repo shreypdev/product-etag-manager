@@ -1,4 +1,3 @@
-//Workable program
 // include library, include base class, make path known
 #include <GxEPD.h>
 #include <GxIO/GxIO_SPI/GxIO_SPI.h>
@@ -75,6 +74,7 @@ void showMianPage(String ip);
 void displayInit(void);
 bool setPowerBoostKeepOn(int en);
 void clean_display();
+DynamicJsonDocument findTags(const char * service, const char * proto);
 
 typedef enum {
     RIGHT_ALIGNMENT = 0,
@@ -124,7 +124,7 @@ String WebServerStart(void)
     Serial.println("");
     Serial.println(WiFi.localIP());
 
-    if (MDNS.begin("ttgo")) {
+    if (MDNS.begin("Tag Manager - Host")) {
         Serial.println("MDNS responder started");
     }
     
@@ -138,6 +138,12 @@ String WebServerStart(void)
     });
     server.on("js/tbdValidate.js", HTTP_GET, [](AsyncWebServerRequest * request) {
         request->send(FILESYSTEM, "js/tbdValidate.js", "application/javascript");
+    });
+
+    server.on("/find-tags", HTTP_GET, [](AsyncWebServerRequest * request) {
+        String response;
+        serializeJson(findTags("find-tag", "tcp"), response);
+        request->send(200, "application/json", response);
     });
     
     server.onNotFound([](AsyncWebServerRequest * request) {
@@ -197,6 +203,28 @@ void clean_display() {
     Serial.println("Adafruit EPD: Screen cleared");
 }
 
+DynamicJsonDocument findTags(const char * service, const char * proto){
+    DynamicJsonDocument  root(256);
+    JsonArray devices = root.createNestedArray("devices");
+  
+    Serial.printf("Browsing for service _%s._%s.local. ... ", service, proto);
+    int n = MDNS.queryService(service, proto);
+    if (n == 0) {
+        Serial.println("no services found");
+    } else {
+        Serial.print(n);
+        Serial.println(" service(s) found and responded to client");
+        for (int i = 0; i < n; ++i) {
+            DynamicJsonDocument  device(256);
+            device["hostName"] = MDNS.hostname(i);
+            device["ip"] = MDNS.IP(i).toString();
+            device["port"] = MDNS.port(i);
+            devices.add(device);
+        }
+    }
+    return root;
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -228,32 +256,7 @@ void setup()
     showMianPage(ip);
 }
 
-void browseService(const char * service, const char * proto){
-    Serial.printf("Browsing for service _%s._%s.local. ... ", service, proto);
-    int n = MDNS.queryService(service, proto);
-    if (n == 0) {
-        Serial.println("no services found");
-    } else {
-        Serial.print(n);
-        Serial.println(" service(s) found");
-        for (int i = 0; i < n; ++i) {
-            // Print details for each service found
-            Serial.print("  ");
-            Serial.print(i + 1);
-            Serial.print(": ");
-            Serial.print(MDNS.hostname(i));
-            Serial.print(" (");
-            Serial.print(MDNS.IP(i));
-            Serial.print(":");
-            Serial.print(MDNS.port(i));
-            Serial.println(")");
-        }
-    }
-    Serial.println();
-}
-
 void loop()
 {
-    browseService("find-tag", "tcp");
     //Nothing to do here
 }

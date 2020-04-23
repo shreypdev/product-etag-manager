@@ -3,6 +3,8 @@ Step 2) Add the board by adding the below given link in File -> Prederences -> B
 	URL: https://dl.espressif.com/dl/package_esp32_index.json
 Step 3) Now, it's time to add supporting libraries to the Arduino IDE. For this, copy all the folders from 
 	"C:\Users\usrName\path\product-etag-manager\lib" to "C:\Users\usrName\Documents\Arduino\libraries"
+	Additional libraries:
+	->
 Step 4) Once thats done, install a communication driver to get connected with the board with COM PORT.
 	Installation File Path: "C:\Users\usrName\path\product-etag-manager\drivers & plugins\CP210x_Universal_Windows_Driver"
 	**NOTE: This driver is also available @ https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers

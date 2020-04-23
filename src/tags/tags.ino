@@ -297,6 +297,26 @@ bool loadBadgeInfo(Badge_Info_t *info)
     return true;
 }
 
+/* Returns a semi-unique id for the device. The id is based
+*  on part of a MAC address or chip ID so it won't be 
+*  globally unique. */
+uint16_t getDeviceId()
+{
+  #if defined(ARDUINO_ARCH_ESP32)
+    return ESP.getEfuseMac();
+  #else
+    return ESP.getChipId();
+  #endif
+}
+ 
+/* Append a semi-unique id to the name template */
+String makeName(const char *nameTemplate)
+{
+  uint16_t uChipId = getDeviceId();
+  String Result = String(nameTemplate) + String(uChipId, HEX);
+  return Result;
+}
+
 void WebServerStart(void)
 {
 
@@ -334,7 +354,17 @@ void WebServerStart(void)
     Serial.println(WiFi.localIP());
 #endif
 
-    if (MDNS.begin("ttgo")) {
+    String tag_name = makeName("Tag Manager - Tag - ");
+    
+    // Length (with one extra character for the null terminator)
+    int tag_name_len = tag_name.length() + 1; 
+     
+    // Prepare the character array (the buffer) 
+    char tag_name_array[tag_name_len];
+
+    tag_name.toCharArray(tag_name_array, tag_name_len);
+    
+    if (MDNS.begin(tag_name_array)) {
         Serial.println("MDNS responder started");
     }
     
