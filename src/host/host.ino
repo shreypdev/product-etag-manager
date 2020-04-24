@@ -115,81 +115,9 @@ void serveFiles()
 {
     server.serveStatic("/", SPIFFS, "/").setDefaultFile("login.html");
     
-    server.on("css/material-dashboard.css", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "css/material-dashboard.css", "text/css");
-    });
-    server.on("img/login.jpg", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "img/login.jpg", "image/jpg");
-    });
-    server.on("img/favicon.png", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "img/favicon.png", "image/png");
-    });
-    server.on("js/core/bootstrap-material-design.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/core/bootstrap-material-design.min.js", "application/javascript");
-    });
-    server.on("js/core/jquery.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/core/jquery.min.js", "application/javascript");
-    });
-    server.on("js/core/popper.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/core/popper.min.js", "application/javascript");
-    });
-    server.on("js/core/popper.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/core/popper.min.js", "application/javascript");
-    });
-    server.on("js/plugins/arrive.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/arrive.min.js", "application/javascript");
-    });
-    server.on("js/plugins/bootstrap-datetimepicker.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/bootstrap-datetimepicker.min.js", "application/javascript");
-    });
-    server.on("js/plugins/bootstrap-notify.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/bootstrap-notify.js", "application/javascript");
-    });
-    server.on("js/plugins/bootstrap-selectpicker.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/bootstrap-selectpicker.js", "application/javascript");
-    });
-    server.on("js/plugins/bootstrap-tagsinput.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/bootstrap-tagsinput.js", "application/javascript");
-    });
-    server.on("js/plugins/chartist.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/chartist.min.js", "application/javascript");
-    });
-    server.on("js/plugins/fullcalendar.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/fullcalendar.min.js", "application/javascript");
-    });
-    server.on("js/plugins/jasny-bootstrap.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/jasny-bootstrap.min.js", "application/javascript");
-    });
-    server.on("js/plugins/jquery-jvectormap.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/jquery-jvectormap.js", "application/javascript");
-    });
-    server.on("js/plugins/jquery.bootstrap-wizard.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/jquery.bootstrap-wizard.js", "application/javascript");
-    });
-    server.on("js/plugins/jquery.dataTables.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/jquery.dataTables.min.js", "application/javascript");
-    });
-    server.on("js/plugins/jquery.tagsinput.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/jquery.tagsinput.js", "application/javascript");
-    });
-    server.on("js/plugins/jquery.validate.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/jquery.validate.min.js", "application/javascript");
-    });
-    server.on("js/plugins/moment.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/moment.min.js", "application/javascript");
-    });
-    server.on("js/plugins/nouislider.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/nouislider.min.js", "application/javascript");
-    });
-    server.on("js/plugins/perfect-scrollbar.jquery.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/perfect-scrollbar.jquery.min.js", "application/javascript");
-    });
-    server.on("js/plugins/sweetalert2.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/plugins/sweetalert2.js", "application/javascript");
-    });
-    server.on("js/material-dashboard.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/material-dashboard.js", "application/javascript");
-    });
+    // server.on("css/material-dashboard.css", HTTP_GET, [](AsyncWebServerRequest * request) {
+    //     request->send(FILESYSTEM, "css/material-dashboard.css", "text/css");
+    // });
 }
 
 void serveAPI()
