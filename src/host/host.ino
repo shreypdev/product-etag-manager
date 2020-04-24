@@ -113,11 +113,23 @@ void displayText(const String &str, int16_t y, uint8_t alignment)
 
 void serveFiles()
 {
-    server.serveStatic("/", SPIFFS, "/").setDefaultFile("login.html");
-    
-    // server.on("css/material-dashboard.css", HTTP_GET, [](AsyncWebServerRequest * request) {
-    //     request->send(FILESYSTEM, "css/material-dashboard.css", "text/css");
-    // });
+    server.serveStatic("/", SPIFFS, "/").setDefaultFile("signin.html");
+
+    server.on("signup.html", HTTP_GET, [](AsyncWebServerRequest * request) {
+        request->send(FILESYSTEM, "signup.html", "text/html");
+    });
+    server.on("css/main.css", HTTP_GET, [](AsyncWebServerRequest * request) {
+        request->send(FILESYSTEM, "css/main.css", "text/css");
+    });
+    server.on("css/signin-up.css", HTTP_GET, [](AsyncWebServerRequest * request) {
+        request->send(FILESYSTEM, "css/main.css", "text/css");
+    });
+    server.on("js/jquery.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
+        request->send(FILESYSTEM, "js/jquery.min.js", "application/javascript");
+    });
+    server.on("js/tbdValidate.js", HTTP_GET, [](AsyncWebServerRequest * request) {
+        request->send(FILESYSTEM, "js/tbdValidate.js", "application/javascript");
+    });
 }
 
 void serveAPI()
@@ -251,6 +263,7 @@ void setup()
         digitalWrite(AMP_POWER_CTRL, HIGH);
     #endif
 
+    //To see the files in the memory
     if (!FILESYSTEM.begin()) {
         Serial.println("FILESYSTEM is not database");
         Serial.println("Please use Arduino ESP32 Sketch data Upload files");
@@ -260,7 +273,6 @@ void setup()
     }
 
     String ip = WebServerStart();
-
     showMianPage(ip);
 }
 

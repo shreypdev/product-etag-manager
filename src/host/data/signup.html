@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Bootstrap Sign in Form with Facebook and Twitter Buttons</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://kit.fontawesome.com/6a7532eba7.js" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="css/signin-up.css">
+    </head>
+    <body>
+        <div class="login-signup-form">
+            <h1 class="text-center">Tag Manager</h1> 
+            <hr>  
+            <form action="/examples/actions/confirmation.php" method="post">
+                <h2 class="text-center">Sign in</h2>   
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                        <input type="text" class="form-control" id="userName" name="username" placeholder="Username" required="required">				
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fas fa-envelope"></i></span>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Email" required="required">				
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required="required">				
+                    </div>
+                </div> 
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required="required">				
+                    </div>
+                </div> 
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fas fa-key"></i></span>
+                        <input type="password" class="form-control" id="hostSecretKey" name="hostSecretKey" placeholder="Host Secret Key" required="required">				
+                    </div>
+                </div>        
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary login-signup-btn btn-block">Sign up</button>
+                </div>
+            </form>
+            <p class="text-center text-muted small">Already have an account? <a href="./signin.html">Sign in here!</a></p>
+        </div>
+    </body>
+</html>
