@@ -43,6 +43,7 @@ $("#sign-up").click((e)=>{
                         let dbPromise = firebase.database().ref('Data/' + hostSecretKey + '/users').update(tempJson);
                         dbPromise.then(() => {
                             console.log("Done!!");
+                            self.location="dashboard.html";
                         })
                         dbPromise.catch(() => {
                             $("#input-error-text").html("Something went wrong please try again!!"); 

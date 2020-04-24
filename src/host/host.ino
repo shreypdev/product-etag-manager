@@ -119,12 +119,17 @@ void serveFiles()
     server.on("signup.html", HTTP_GET, [](AsyncWebServerRequest * request) {
         request->send(FILESYSTEM, "signup.html", "text/html");
     });
+    server.on("dashboard.html", HTTP_GET, [](AsyncWebServerRequest * request) {
+        request->send(FILESYSTEM, "dashboard.html", "text/html");
+    });
+    
     server.on("css/main.css", HTTP_GET, [](AsyncWebServerRequest * request) {
         request->send(FILESYSTEM, "css/main.css", "text/css");
     });
     server.on("css/signin-up.css", HTTP_GET, [](AsyncWebServerRequest * request) {
         request->send(FILESYSTEM, "css/main.css", "text/css");
     });
+    
     server.on("js/jquery.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
         request->send(FILESYSTEM, "js/jquery.min.js", "application/javascript");
     });
