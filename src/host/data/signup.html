@@ -15,12 +15,12 @@
         <div class="login-signup-form">
             <h1 class="text-center">Tag Manager</h1> 
             <hr>  
-            <form action="/examples/actions/confirmation.php" method="post">
+            <form>
                 <h2 class="text-center">Sign in</h2>   
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" id="userName" name="username" placeholder="Username" required="required">				
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Name" required="required">				
                     </div>
                 </div>
                 <div class="form-group">
@@ -46,12 +46,26 @@
                         <span class="input-group-addon"><i class="fas fa-key"></i></span>
                         <input type="password" class="form-control" id="hostSecretKey" name="hostSecretKey" placeholder="Host Secret Key" required="required">				
                     </div>
-                </div>        
+                </div>
+                <p class="input-error"><i id="input-error-text"></i></p>        
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary login-signup-btn btn-block">Sign up</button>
+                    <button id="sign-up" class="btn btn-primary login-signup-btn btn-block">Sign up</button>
                 </div>
             </form>
             <p class="text-center text-muted small">Already have an account? <a href="./signin.html">Sign in here!</a></p>
         </div>
+
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-analytics.js"></script>
+        <!-- for firebase -->
+        <script src="https://www.gstatic.com/firebasejs/5.4.2/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase-storage.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase-messaging.js"></script> 
+        <script src="js/firebase.js"></script>
+        <!-- Page js -->
+        <script src="js/signin-up.js"></script>
     </body>
 </html>

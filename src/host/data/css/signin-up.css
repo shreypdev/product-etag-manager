@@ -57,3 +57,6 @@ h1{
     top: -11px;
     z-index: 1;
 }
+.input-error {
+    color: #DC3D24;
+}

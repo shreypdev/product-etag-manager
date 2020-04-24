@@ -63,6 +63,7 @@ const GFXfont *fonts[] = {
 
 #define FILESYSTEM SPIFFS
 
+#define HOST_SECRET_KEY "abc-123"
 #define WIFI_SSID "BNET"
 #define WIFI_PASSWORD "Victoria203!"
 #define CHANNEL_0 0
@@ -138,6 +139,26 @@ void serveAPI()
         String response;
         serializeJson(findTags("find-tag", "tcp"), response);
         request->send(200, "application/json", response);
+    });
+    server.on("/confirm-host-secret-key", HTTP_POST, [](AsyncWebServerRequest * request) {
+        String responseMessage;
+
+        String paramName = request->getParam(0)->name();
+        String paramVal = request->getParam(0)->value();
+
+        if(paramName == "hostSecretKey"){
+          if(paramVal == HOST_SECRET_KEY){
+            responseMessage = "true";
+          } else {
+            responseMessage = "false";
+          }
+        } else {
+          responseMessage = "false";
+        }
+        
+        AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", responseMessage);
+        response->addHeader("Access-Control-Allow-Origin", "*");
+        request->send(response);
     });
 }
 
