@@ -40,12 +40,12 @@ $("#sign-up").click((e)=>{
                     .then(() => {
                         let tempJson = {};
                         tempJson [userId] = name;
-                        let dbPromise = firebase.database().ref('Data/' + hostSecretKey + '/users').update(tempJson);
-                        dbPromise.then(() => {
+                        firebase.database().ref('Data/' + hostSecretKey + '/users').update(tempJson)
+                        .then(() => {
                             console.log("Done!!");
                             self.location="dashboard.html";
                         })
-                        dbPromise.catch(() => {
+                        .catch(() => {
                             $("#input-error-text").html("Something went wrong please try again!!"); 
                             return;
                         });
@@ -63,7 +63,58 @@ $("#sign-up").click((e)=>{
             $("#email").val("")
             $("#password").val("");
             $("#confirmPassword").val("");
-            $("#hostSecretKey").val("")
+            $("#hostSecretKey").val("");
+            return;
+        });
+    });
+});
+
+$("#sign-in").click((e)=>{
+    e.preventDefault();
+
+    $("#input-error-text").html("");
+    
+    const email = $("#email").val();
+    const password = $("#password").val();
+    const hostSecretKey = $("#hostSecretKey").val();
+
+    if(email == "" || password == "" || hostSecretKey == ""){
+        $("#input-error-text").html("Everything on this form is required!!");
+        return;
+    }
+
+    $.post("/confirm-host-secret-key", { hostSecretKey: hostSecretKey })
+    .done(( resp ) => {
+        resp = resp.toLowerCase() == 'true' ? true : false;
+        if(!resp) {
+            $("#input-error-text").html("Host secret key verification failed!!");
+            $("#hostSecretKey").val("");
+            return;
+        }
+
+        firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(() => {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    let userId = user.uid;
+                    
+                    firebase.database().ref('Data/' + hostSecretKey + '/users/' + userId)
+                    .on('value', (snap) => {
+                        if(!snap.val()){
+                            $("#input-error-text").html("Cannot authenticate with the credentials entered");
+                            return;
+                        }
+                        console.log("Done!!");
+                        self.location="dashboard.html";
+                    });
+                }
+            });
+        })
+        .catch((error) => {
+            $("#input-error-text").html(error.message);
+            $("#email").val("");
+            $("#password").val("");
+            $("#hostSecretKey").val("");
             return;
         });
     });
