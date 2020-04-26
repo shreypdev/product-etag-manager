@@ -6,9 +6,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Tag Manager | Sign In</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <script src="https://kit.fontawesome.com/6a7532eba7.js" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="css/signin-up.css">
     </head>
     <body>
@@ -29,12 +26,6 @@
                         <input type="password" class="form-control" id="password" name="password" placeholder="Password" required="required">				
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="fas fa-key"></i></span>
-                        <input type="password" class="form-control" id="hostSecretKey" name="hostSecretKey" placeholder="Host Secret Key" required="required">				
-                    </div>
-                </div>
                 <p class="input-error"><i id="input-error-text"></i></p>          
                 <div class="form-group">
                     <button type="submit" id="sign-in" class="btn btn-primary login-signup-btn btn-block">Sign in</button>
@@ -47,6 +38,11 @@
             <p class="text-center text-muted small">Don't have an account? <a href="./signup.html">Sign up here!</a></p>
         </div>
 
+        <!-- Core CSS -->
+        <script src="https://kit.fontawesome.com/6a7532eba7.js" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
         <!-- The core Firebase JS SDK is always required and must be listed first -->
         <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-analytics.js"></script>
@@ -57,6 +53,9 @@
         <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase-storage.js"></script>
         <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase-messaging.js"></script> 
         <script src="js/firebase.js"></script>
+
+        <!-- App js -->
+        <script src="js/app.js"></script>
         <!-- Page js -->
         <script src="js/signin-up.js"></script>
     </body>

@@ -112,41 +112,6 @@ void displayText(const String &str, int16_t y, uint8_t alignment)
     display.println(str);
 }
 
-void serveFiles()
-{
-    server.serveStatic("/", SPIFFS, "/").setDefaultFile("signin.html");
-
-    server.on("signup.html", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "signup.html", "text/html");
-    });
-    server.on("dashboard.html", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "dashboard.html", "text/html");
-    });
-    server.on("dashboard.html", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "dashboard.html", "text/html");
-    });
-    
-    server.on("css/main.css", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "css/main.css", "text/css");
-    });
-    server.on("css/signin-up.css", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "css/main.css", "text/css");
-    });
-    server.on("css/sb-admin.css", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "css/sb-admin.css", "text/css");
-    });
-    
-    server.on("js/jquery.min.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/jquery.min.js", "application/javascript");
-    });
-    server.on("js/tbdValidate.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/tbdValidate.js", "application/javascript");
-    });
-    server.on("js/sb-admin.js", HTTP_GET, [](AsyncWebServerRequest * request) {
-        request->send(FILESYSTEM, "js/sb-admin.js", "application/javascript");
-    });
-}
-
 void serveAPI()
 {
     server.on("/find-tags", HTTP_GET, [](AsyncWebServerRequest * request) {
@@ -178,7 +143,8 @@ void serveAPI()
 
 void serveServices()
 {
-    serveFiles();
+    server.serveStatic("/", SPIFFS, "/").setDefaultFile("signin.html");
+    
     serveAPI();
     
     server.onNotFound([](AsyncWebServerRequest * request) {
