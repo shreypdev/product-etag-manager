@@ -237,7 +237,7 @@ DynamicJsonDocument findTags(const char * service, const char * proto){
         Serial.println(" service(s) found and responded to client");
         for (int i = 0; i < n; ++i) {
             DynamicJsonDocument  device(256);
-            device["hostName"] = MDNS.hostname(i);
+            device["tagName"] = MDNS.hostname(i);
             device["ip"] = MDNS.IP(i).toString();
             device["port"] = MDNS.port(i);
             devices.add(device);

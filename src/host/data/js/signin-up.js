@@ -103,6 +103,7 @@ $("#sign-in").click((e)=>{
                     $("#input-error-text").html("Cannot authenticate user on the current host!!");
                     $("#email").val("");
                     $("#password").val("");
+                    firebase.auth().signOut();
                     return;
                 }
 
@@ -113,6 +114,7 @@ $("#sign-in").click((e)=>{
                         $("#input-error-text").html("Cannot authenticate user on the current host!!");
                         $("#email").val("");
                         $("#password").val("");
+                        firebase.auth().signOut();
                         return;
                     }
                     
@@ -129,6 +131,6 @@ $("#sign-in").click((e)=>{
     });
 });
 
-$(document).ready(function(){	
+$(document).ready(() => {	
 	forwardToDashboard(); //Call from app.js
 });

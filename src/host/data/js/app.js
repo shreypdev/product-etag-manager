@@ -59,3 +59,7 @@ const forwardToDashboard = () => {
         });
     });
 };
+
+$("#logout-btn").click((e) => {
+    firebase.auth().signOut();
+});
