@@ -159,6 +159,7 @@ const populateRemoveTagsSection = async (firstTimeCall) => {
         `;
     });
 
+    $("#populate-remove-tags").empty();
     $("#populate-remove-tags").html(html);
 
     if(firstTimeCall){
