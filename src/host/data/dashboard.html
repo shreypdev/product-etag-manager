@@ -275,7 +275,7 @@
                   <h6 class="m-0 font-weight-bold text-primary">Add Tags</h6>
                 </a>
                 <!-- Card Content - Collapse -->
-                <div class="collapse show" id="addTagCollapseCard">
+                <div class="collapse" id="addTagCollapseCard">
                   <div class="card-body">
                     <div class="text-center">
                       <button class="btn btn-primary btn-icon-split" id="searchNewTags-btn"> 
@@ -288,6 +288,7 @@
                     <hr>
                     <div class="text-center" id="tag-search-notification">Click on search to find tags <br>on the local network</div>
                     <ul class="list-group" id="populate-new-tags">
+                      
                     </ul>
                   </div>
                 </div>
@@ -302,7 +303,19 @@
                 <!-- Card Content - Collapse -->
                 <div class="collapse" id="removeTagCollapseCard">
                   <div class="card-body">
-                    ghjfhfj ihkjh
+                    <div class="text-center" id="tag-remove-notification"></div>
+                    <div class="table-responsive">
+                      <table class="table table-bordered" id="populate-remove-tags-table" width="100%" cellspacing="0">
+                        <thead>
+                          <tr>
+                            <th>Tag Name</th>
+                          </tr>
+                        </thead>
+                        <tbody id="populate-remove-tags">
+                          
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -359,17 +372,25 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+          <h5 class="modal-title" id="exampleModalLongTitle">Add tag confirmation</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          ...
+          <form>
+            <div class="form-row">
+              <div class="form-group col-md-12">
+                <label for="tagName">Tag Name</label>
+                <input type="text" class="form-control" id="tagName" placeholder="Sample-Item">
+                <p class="input-error"><i id="device-name-error-text"></i></p>
+              </div>
+            </div>
+          </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" id="add-tag-confirmation">Save changes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="add-tag-confirmation">Add</button>
         </div>
       </div>
     </div>
@@ -399,6 +420,7 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
   <script src="https://kit.fontawesome.com/6a7532eba7.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
   
