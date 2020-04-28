@@ -1,10 +1,12 @@
 let tagInfo = {
-    tag_name_orginal: '',
+    tag_name_original: '',
     tag_name_given: '',
     tag_ip: ''
 };
 
 let currentHost = 'abc-123';
+
+let removeTagKey = '';
 
 $("#searchNewTags-btn").click((e) => {
     e.preventDefault();
@@ -51,7 +53,7 @@ $("#searchNewTags-btn").click((e) => {
 
             //Defining add-tag function for currently showed tags       
             $(".add-tag").click((e) => {
-                tagInfo.tag_name_orginal = $(e.currentTarget).attr('name');
+                tagInfo.tag_name_original = $(e.currentTarget).attr('name');
                 tagInfo.tag_ip = $(e.currentTarget).attr('ip');
                 $("#addTagGetMoreInfoModal").modal();
             });
@@ -65,6 +67,7 @@ $("#add-tag-confirmation").click((e) => {
     
     let tag_name_given = $("#tagName").val();
     if(tag_name_given === ''){
+        $("#tagName").val('');
         $("#device-name-error-text").html('Device name cannot be empty!!');
         $("#add-tag-confirmation").prop('disabled', false);
         return;
@@ -79,20 +82,23 @@ $("#add-tag-confirmation").click((e) => {
             if(!registeredTags){
                 registeredTags = [];
             }
-            registeredTags.push(tagInfo.tag_name_orginal.substr(tagInfo.tag_name_orginal.length-4, 4));
+            registeredTags.push(tagInfo.tag_name_original.substr(tagInfo.tag_name_original.length-4, 4));
             registeredTags.sort();
-            firebase.database().ref('Data/hosts/' + currentHost + '/tags/registered').update(registeredTags)
+            firebase.database().ref('Data/hosts/' + currentHost + '/tags/registered').set(registeredTags)
             .then(() => {
                 //  Enable add button again and close modal.
                 $("#addTagGetMoreInfoModal").modal('hide');
                 $("#add-tag-confirmation").prop('disabled', false);
 
                 // Remove Added tag from Add tag section
-                $("a[name='"+ tagInfo.tag_name_orginal +"']").parent().remove();
+                $("a[name='"+ tagInfo.tag_name_original +"']").parent().remove();
                 // Check if Add new tag section is empty or still has devices
                 if(!$("#populate-new-tags").children().length){
                     $("#tag-search-notification").html("Click on search to find tags <br>on the local network");
                 }
+
+                //  empty input box
+                $("#tagName").val('');
 
                 //  Show notification
                 $.toast({
@@ -105,6 +111,7 @@ $("#add-tag-confirmation").click((e) => {
             })
             .catch((error) => {
                 console.log(error.message);
+                $("#tagName").val('');
                 $("#add-tag-confirmation").prop('disabled', false);
                 return;
             });
@@ -112,6 +119,7 @@ $("#add-tag-confirmation").click((e) => {
     })
     .catch((error) => {
         console.log(error.message);
+        $("#tagName").val('');
         $("#add-tag-confirmation").prop('disabled', false);
         return;
     })
@@ -140,12 +148,12 @@ const populateRemoveTagsSection = async (firstTimeCall) => {
         html += `
             <tr>
                 <td>
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                    ${tags[key].tag_name_given}
-                    <a class="btn btn-danger btn-circle btn-sm remove-tag text-white" ip="${tags[key].ip}" key="${key}">
-                        <i class="fas fa-minus"></i>
-                    </a>
-                </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        ${tags[key].tag_name_given}
+                        <a class="btn btn-danger btn-circle btn-sm remove-tag text-white" ip="${tags[key].tag_ip}" key="${key}" name="${tags[key].tag_name_given}">
+                            <i class="fas fa-minus"></i>
+                        </a>
+                    </div>
                 </td>
             </tr>
         `;
@@ -160,7 +168,62 @@ const populateRemoveTagsSection = async (firstTimeCall) => {
             "dom": 'ftp'
         });
     }
+
+    //Defining remove-tag function for currently showed tags       
+    $(".remove-tag").click((e) => {
+        removeTagKey = $(e.currentTarget).attr('key');
+        $("#remove-tag-confirmation-msg").html(`Are you sure you want to remove ${$(e.currentTarget).attr('name')} tag?`);
+        $("#removeTagGetMoreInfoModal").modal();
+    });
 };
+
+$("#remove-tag-confirmation").click((e) => {
+    $("#remove-tag-confirmation").prop('disabled', true);
+
+    firebase.database().ref('Data/hosts/' + currentHost + '/tags/detail/' + removeTagKey + '')
+    .once('value', (snap) => {
+        let tagDetails = snap.val();
+        if(!tagDetails){ return; }
+
+        let tagID = tagDetails.tag_name_original.substr(tagDetails.tag_name_original.length-4, 4);
+
+        firebase.database().ref('Data/hosts/' + currentHost + '/tags/registered')
+        .once('value', (snap) => {
+            let registeredTags = snap.val();
+            if(!registeredTags){
+                registeredTags = [];
+            }
+            let tagIDIndex = registeredTags.indexOf(tagID);
+            registeredTags.splice(tagIDIndex, 1);
+            firebase.database().ref('Data/hosts/' + currentHost + '/tags/registered').set(registeredTags)
+            .then(() => {
+                firebase.database().ref('Data/hosts/' + currentHost + '/tags/detail/' + removeTagKey + '').remove()
+                .then(() => {
+                    //  Enable remove button again and close modal.
+                    $("#removeTagGetMoreInfoModal").modal('hide');
+                    $("#remove-tag-confirmation").prop('disabled', false);
+
+                    //  Show notification
+                    $.toast({
+                        title: 'Device removed successfully',
+                        type: 'success',
+                        delay: 5000
+                    });
+                })
+                .catch((error) => {
+                    console.log(error.message);
+                    $("#remove-tag-confirmation").prop('disabled', false);
+                    return;
+                });
+            })
+            .catch((error) => {
+                console.log(error.message);
+                $("#remove-tag-confirmation").prop('disabled', false);
+                return;
+            });
+        });
+    });
+});
 
 const liveUpdateFromDB_Tags = () => {
     firebase.database().ref('Data/hosts/' + currentHost + '/tags')
