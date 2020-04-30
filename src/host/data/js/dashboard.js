@@ -75,38 +75,53 @@ $("#add-tag-confirmation").click((e) => {
     tagInfo.tag_name_given = tag_name_given;
 
     firebase.database().ref('Data/hosts/' + currentHost + '/tags/detail').push(tagInfo)
-    .then(() => {
+    .then((resp) => {
+        let detailPushKey = resp.key;
+
         firebase.database().ref('Data/hosts/' + currentHost + '/tags/registered')
         .once('value', (snap) => {
             let registeredTags = snap.val();
+            let tagID = tagInfo.tag_name_original.substr(tagInfo.tag_name_original.length-4, 4);
+
             if(!registeredTags){
                 registeredTags = [];
             }
-            registeredTags.push(tagInfo.tag_name_original.substr(tagInfo.tag_name_original.length-4, 4));
+            registeredTags.push(tagID);
             registeredTags.sort();
             firebase.database().ref('Data/hosts/' + currentHost + '/tags/registered').set(registeredTags)
             .then(() => {
-                //  Enable add button again and close modal.
-                $("#addTagGetMoreInfoModal").modal('hide');
-                $("#add-tag-confirmation").prop('disabled', false);
 
-                // Remove Added tag from Add tag section
-                $("a[name='"+ tagInfo.tag_name_original +"']").parent().remove();
-                // Check if Add new tag section is empty or still has devices
-                if(!$("#populate-new-tags").children().length){
-                    $("#tag-search-notification").html("Click on search to find tags <br>on the local network");
-                }
+                firebase.database().ref('Data/hosts/' + currentHost + '/tags/tagID-detailKey-mapping/' + tagID + '').set(detailPushKey)
+                .then(() => {
 
-                //  empty input box
-                $("#tagName").val('');
+                    //  Enable add button again and close modal.
+                    $("#addTagGetMoreInfoModal").modal('hide');
+                    $("#add-tag-confirmation").prop('disabled', false);
 
-                //  Show notification
-                $.toast({
-                    title: 'Device added successfully',
-                    subtitle: '0 mins ago',
-                    content: 'New devices named '+ tagInfo.tag_name_given +' is added to the '+ currentHost +' host.',
-                    type: 'success',
-                    delay: 5000
+                    // Remove Added tag from Add tag section
+                    $("a[name='"+ tagInfo.tag_name_original +"']").parent().remove();
+                    // Check if Add new tag section is empty or still has devices
+                    if(!$("#populate-new-tags").children().length){
+                        $("#tag-search-notification").html("Click on search to find tags <br>on the local network");
+                    }
+
+                    //  empty input box
+                    $("#tagName").val('');
+
+                    //  Show notification
+                    $.toast({
+                        title: 'Device added successfully',
+                        subtitle: '0 mins ago',
+                        content: 'New devices named '+ tagInfo.tag_name_given +' is added to the '+ currentHost +' host.',
+                        type: 'success',
+                        delay: 5000
+                    });
+                })
+                .catch((error) => {
+                    console.log(error.message);
+                    $("#tagName").val('');
+                    $("#add-tag-confirmation").prop('disabled', false);
+                    return;
                 });
             })
             .catch((error) => {
@@ -200,15 +215,23 @@ $("#remove-tag-confirmation").click((e) => {
             .then(() => {
                 firebase.database().ref('Data/hosts/' + currentHost + '/tags/detail/' + removeTagKey + '').remove()
                 .then(() => {
-                    //  Enable remove button again and close modal.
-                    $("#removeTagGetMoreInfoModal").modal('hide');
-                    $("#remove-tag-confirmation").prop('disabled', false);
+                    firebase.database().ref('Data/hosts/' + currentHost + '/tags/tagID-detailKey-mapping/' + tagID + '').remove()
+                    .then(() => {
+                        //  Enable remove button again and close modal.
+                        $("#removeTagGetMoreInfoModal").modal('hide');
+                        $("#remove-tag-confirmation").prop('disabled', false);
 
-                    //  Show notification
-                    $.toast({
-                        title: 'Device removed successfully',
-                        type: 'success',
-                        delay: 5000
+                        //  Show notification
+                        $.toast({
+                            title: 'Device removed successfully',
+                            type: 'success',
+                            delay: 5000
+                        });
+                    })
+                    .catch((error) => {
+                        console.log(error.message);
+                        $("#remove-tag-confirmation").prop('disabled', false);
+                        return;
                     });
                 })
                 .catch((error) => {

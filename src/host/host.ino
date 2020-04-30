@@ -54,6 +54,7 @@ const GFXfont *fonts[] = {
 #include <SPIFFS.h>
 #include <FS.h>
 #include <ArduinoJson.h>
+#include <FirebaseESP32.h>
 #include "esp_wifi.h"
 #include "Esp.h"
 #include "ESPmDNS.h"
@@ -66,6 +67,8 @@ const GFXfont *fonts[] = {
 #define HOST_SECRET_KEY "abc-123"
 #define WIFI_SSID "BNET"
 #define WIFI_PASSWORD "Victoria203!"
+#define FIREBASE_HOST "https://tag-manager-b3096.firebaseio.com/"
+#define FIREBASE_AUTH "3vbv5Q4wu7jzImPkSD6N3RiRV0tDXmSkiyrIm3uY"
 #define CHANNEL_0 0
 #define IP5306_ADDR 0X75
 #define IP5306_REG_SYS_CTL0 0x00
@@ -122,12 +125,69 @@ void serveAPI()
     server.on("/confirm-host-secret-key", HTTP_POST, [](AsyncWebServerRequest * request) {
         String responseMessage;
 
-        String paramName = request->getParam(0)->name();
-        String paramVal = request->getParam(0)->value();
+        String paramName_hostSecretKey = request->getParam(0)->name();
+        String paramVal_hostSecretKey = request->getParam(0)->value();
 
-        if(paramName == "hostSecretKey"){
-          if(paramVal == HOST_SECRET_KEY){
+        if(paramName_hostSecretKey == "hostSecretKey"){
+          if(paramVal_hostSecretKey == HOST_SECRET_KEY){
             responseMessage = "true";
+          } else {
+            responseMessage = "false";
+          }
+        } else {
+          responseMessage = "false";
+        }
+        
+        AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", responseMessage);
+        response->addHeader("Access-Control-Allow-Origin", "*");
+        request->send(response);
+    });
+    server.on("/tag-ip-changed", HTTP_POST, [](AsyncWebServerRequest * request) {
+        String responseMessage;
+
+        String paramName_tagID = request->getParam(0)->name();
+        String paramVal_tagID = request->getParam(0)->value();
+        String paramName_oldTagIP = request->getParam(1)->name();
+        String paramVal_oldTagIP = request->getParam(1)->value();
+        String paramName_newTagIP = request->getParam(2)->name();
+        String paramVal_newTagIP = request->getParam(2)->value();
+
+        if(paramName_tagID == "tagID" && paramName_oldTagIP == "oldTagIP" && paramName_newTagIP == "newTagIP"){
+          if(paramVal_tagID != "" && paramVal_oldTagIP != "" && paramVal_newTagIP != ""){
+
+            // FirebaseData firebaseData;
+            FirebaseData firebaseData;
+            String hostSecretKey = HOST_SECRET_KEY;
+            if (Firebase.get(firebaseData, "Data/hosts/" + hostSecretKey + "/tags/tagID-detailKey-mapping/" + paramVal_tagID + "")){
+              String tagDetailsKey = firebaseData.stringData();
+              if (Firebase.get(firebaseData, "Data/hosts/" + hostSecretKey + "/tags/detail/" + tagDetailsKey + "/tag_ip")){
+                String tag_ip = firebaseData.stringData();
+
+                if(tag_ip != paramVal_newTagIP){
+                  FirebaseJson json;
+                  json.set("tagDetailsKey", tagDetailsKey);
+                  json.set("oldTagIP", paramVal_oldTagIP);
+                  json.set("newTagIP", paramVal_newTagIP);
+                  json.set("hostID", hostSecretKey);
+                  //TODO: Add tag Name
+
+                  if (Firebase.set(firebaseData, "Data/hosts/" + hostSecretKey + "/notifications/0", json)){
+                     responseMessage = "true";
+                  } else {
+                     Serial.println("REASON: " + firebaseData.errorReason());
+                     responseMessage = "false";
+                  }
+                }
+                
+                responseMessage = "true";
+              } else {
+                Serial.println("REASON: " + firebaseData.errorReason());
+                responseMessage = "false";
+              }
+            } else {
+              Serial.println("REASON: " + firebaseData.errorReason());
+              responseMessage = "false";
+            }
           } else {
             responseMessage = "false";
           }
@@ -275,6 +335,91 @@ void setup()
 
     String ip = WebServerStart();
     showMianPage(ip);
+
+    //Connect Firebase
+    Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+    Firebase.reconnectWiFi(true);
+}
+
+void printResult(FirebaseData &data)
+{
+
+    if (data.dataType() == "int")
+        Serial.println(data.intData());
+    else if (data.dataType() == "float")
+        Serial.println(data.floatData(), 5);
+    else if (data.dataType() == "double")
+        printf("%.9lf\n", data.doubleData());
+    else if (data.dataType() == "boolean")
+        Serial.println(data.boolData() == 1 ? "true" : "false");
+    else if (data.dataType() == "string")
+        Serial.println(data.stringData());
+    else if (data.dataType() == "json")
+    {
+        Serial.println();
+        FirebaseJson &json = data.jsonObject();
+        //Print all object data
+        Serial.println("Pretty printed JSON data:");
+        String jsonStr;
+        json.toString(jsonStr, true);
+        Serial.println(jsonStr);
+        Serial.println();
+        Serial.println("Iterate JSON data:");
+        Serial.println();
+        size_t len = json.iteratorBegin();
+        String key, value = "";
+        int type = 0;
+        for (size_t i = 0; i < len; i++)
+        {
+            json.iteratorGet(i, type, key, value);
+            Serial.print(i);
+            Serial.print(", ");
+            Serial.print("Type: ");
+            Serial.print(type == JSON_OBJECT ? "object" : "array");
+            if (type == JSON_OBJECT)
+            {
+                Serial.print(", Key: ");
+                Serial.print(key);
+            }
+            Serial.print(", Value: ");
+            Serial.println(value);
+        }
+        json.iteratorEnd();
+    }
+    else if (data.dataType() == "array")
+    {
+        Serial.println();
+        //get array data from FirebaseData using FirebaseJsonArray object
+        FirebaseJsonArray &arr = data.jsonArray();
+        //Print all array values
+        Serial.println("Pretty printed Array:");
+        String arrStr;
+        arr.toString(arrStr, true);
+        Serial.println(arrStr);
+        Serial.println();
+        Serial.println("Iterate array values:");
+        Serial.println();
+        for (size_t i = 0; i < arr.size(); i++)
+        {
+            Serial.print(i);
+            Serial.print(", Value: ");
+
+            FirebaseJsonData &jsonData = data.jsonData();
+            //Get the result data from FirebaseJsonArray object
+            arr.get(jsonData, i);
+            if (jsonData.typeNum == JSON_BOOL)
+                Serial.println(jsonData.boolValue ? "true" : "false");
+            else if (jsonData.typeNum == JSON_INT)
+                Serial.println(jsonData.intValue);
+            else if (jsonData.typeNum == JSON_DOUBLE)
+                printf("%.9lf\n", jsonData.doubleValue);
+            else if (jsonData.typeNum == JSON_STRING ||
+                     jsonData.typeNum == JSON_NULL ||
+                     jsonData.typeNum == JSON_OBJECT ||
+                     jsonData.typeNum == JSON_ARRAY)
+                Serial.println(jsonData.stringValue);
+        }
+    }
 }
 
 void loop()
