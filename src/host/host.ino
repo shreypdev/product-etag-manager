@@ -115,6 +115,65 @@ void displayText(const String &str, int16_t y, uint8_t alignment)
     display.println(str);
 }
 
+String processTagIPChange(const String paramName_tagID, const String paramVal_tagID, const String paramName_newTagIP, const String paramVal_newTagIP){
+  if(paramName_tagID == "tagID" && paramName_newTagIP == "newTagIP"){
+    if(paramVal_tagID != "" && paramVal_newTagIP != ""){
+  
+      // FirebaseData firebaseData;
+      FirebaseData firebaseData;
+      String hostSecretKey = HOST_SECRET_KEY;
+      if (Firebase.get(firebaseData, "Data/hosts/" + hostSecretKey + "/tags/tagID-detailKey-mapping/" + paramVal_tagID + "")){
+        String tagDetailsKey = firebaseData.stringData();
+        if (Firebase.get(firebaseData, "Data/hosts/" + hostSecretKey + "/tags/detail/" + tagDetailsKey + "/tag_ip_change_requested")){
+          bool tag_ip_change_requested = firebaseData.boolData();
+          if(!tag_ip_change_requested){
+            //TODO: One more condition needs to be tested. That is when a notification is set for an ip change and again there is an ip change,
+            //this time it won't set notification and thus this new ip change is not recoreded
+            if (Firebase.get(firebaseData, "Data/hosts/" + hostSecretKey + "/tags/detail/" + tagDetailsKey + "/tag_ip")){
+              String tag_ip = firebaseData.stringData();
+  
+              if(tag_ip != paramVal_newTagIP){
+                FirebaseJson notificationJson;
+                notificationJson.set("tagDetailsKey", tagDetailsKey);
+                notificationJson.set("newTagIP", paramVal_newTagIP);
+                notificationJson.set("hostID", hostSecretKey);
+  
+                if (Firebase.push(firebaseData, "Data/hosts/" + hostSecretKey + "/notifications", notificationJson)){
+                   
+                   if (Firebase.set(firebaseData, "Data/hosts/" + hostSecretKey + "/tags/detail/" + tagDetailsKey + "/tag_ip_change_requested", true)){
+                     return "true";
+                  } else {
+                     Serial.println("REASON: " + firebaseData.errorReason());
+                     return "false";
+                  }
+                } else {
+                   Serial.println("REASON: " + firebaseData.errorReason());
+                   return "false";
+                }
+              }
+            } else {
+              Serial.println("REASON: " + firebaseData.errorReason());
+              return "false";
+            }
+          } else {
+            return "true";
+          }
+        } else {
+          Serial.println("REASON: " + firebaseData.errorReason());
+          return "false";
+        }
+      } else {
+        Serial.println("REASON: " + firebaseData.errorReason());
+        return "false";
+      }
+    } else {
+      return "false";
+    }
+  } else {
+    return "false";
+  }
+}
+
 void serveAPI()
 {
     server.on("/find-tags", HTTP_GET, [](AsyncWebServerRequest * request) {
@@ -147,53 +206,10 @@ void serveAPI()
 
         String paramName_tagID = request->getParam(0)->name();
         String paramVal_tagID = request->getParam(0)->value();
-        String paramName_oldTagIP = request->getParam(1)->name();
-        String paramVal_oldTagIP = request->getParam(1)->value();
-        String paramName_newTagIP = request->getParam(2)->name();
-        String paramVal_newTagIP = request->getParam(2)->value();
+        String paramName_newTagIP = request->getParam(1)->name();
+        String paramVal_newTagIP = request->getParam(1)->value();
 
-        if(paramName_tagID == "tagID" && paramName_oldTagIP == "oldTagIP" && paramName_newTagIP == "newTagIP"){
-          if(paramVal_tagID != "" && paramVal_oldTagIP != "" && paramVal_newTagIP != ""){
-
-            // FirebaseData firebaseData;
-            FirebaseData firebaseData;
-            String hostSecretKey = HOST_SECRET_KEY;
-            if (Firebase.get(firebaseData, "Data/hosts/" + hostSecretKey + "/tags/tagID-detailKey-mapping/" + paramVal_tagID + "")){
-              String tagDetailsKey = firebaseData.stringData();
-              if (Firebase.get(firebaseData, "Data/hosts/" + hostSecretKey + "/tags/detail/" + tagDetailsKey + "/tag_ip")){
-                String tag_ip = firebaseData.stringData();
-
-                if(tag_ip != paramVal_newTagIP){
-                  FirebaseJson json;
-                  json.set("tagDetailsKey", tagDetailsKey);
-                  json.set("oldTagIP", paramVal_oldTagIP);
-                  json.set("newTagIP", paramVal_newTagIP);
-                  json.set("hostID", hostSecretKey);
-                  //TODO: Add tag Name
-
-                  if (Firebase.set(firebaseData, "Data/hosts/" + hostSecretKey + "/notifications/0", json)){
-                     responseMessage = "true";
-                  } else {
-                     Serial.println("REASON: " + firebaseData.errorReason());
-                     responseMessage = "false";
-                  }
-                }
-                
-                responseMessage = "true";
-              } else {
-                Serial.println("REASON: " + firebaseData.errorReason());
-                responseMessage = "false";
-              }
-            } else {
-              Serial.println("REASON: " + firebaseData.errorReason());
-              responseMessage = "false";
-            }
-          } else {
-            responseMessage = "false";
-          }
-        } else {
-          responseMessage = "false";
-        }
+        responseMessage =  processTagIPChange(paramName_tagID, paramVal_tagID, paramName_newTagIP, paramVal_newTagIP);
         
         AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", responseMessage);
         response->addHeader("Access-Control-Allow-Origin", "*");

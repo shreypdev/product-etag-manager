@@ -1,7 +1,8 @@
 let tagInfo = {
     tag_name_original: '',
     tag_name_given: '',
-    tag_ip: ''
+    tag_ip: '',
+    tag_ip_change_requested: false
 };
 
 let currentHost = 'abc-123';
